@@ -9,12 +9,12 @@ router.get('/', ensureLoggedInUser, function(req, res, next) {
   res.render('users/index')
 });
 
-router.get('/:username', function(req, res, next) {
+router.get('/:username', ensureUserAuth, function(req, res, next) {
   res.render('users/show', {username: req.params.username})
 });
 
-router.get('/:someUser/edit', function(req, res, next) {
-  res.render('users/edit', {user: req.params.someUser})
+router.get('/:username/edit', ensureUserAuth, function(req, res, next) {
+  res.render('users/edit', {user: req.params.username})
 });
 
 function ensureLoggedInUser (req, res, next) {
@@ -23,6 +23,14 @@ function ensureLoggedInUser (req, res, next) {
   } else {
     res.redirect('/login');
   }
+}
+
+function ensureUserAuth (req, res, next) {
+	if (res.locals.currentUser === req.params.username) {
+		next();
+	} else {
+		res.redirect('/login');
+	}
 }
 
 module.exports = router;
