@@ -35,14 +35,16 @@ app.use(setUserNameLocal)
 app.use('/', routes);
 app.use('/', auth);
 app.use('/users', users);
-app.use('/articles', articles);
-app.use('/products', function (req, res, next) {
+app.use('/articles', ensureLoggedInUser, articles);
+app.use('/products', ensureLoggedInUser, products);
+
+function ensureLoggedInUser(req, res, next) {
   if (res.locals.currentUser) {
     next();
   } else {
     res.redirect('/login');
   }
-}, products);
+};
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
